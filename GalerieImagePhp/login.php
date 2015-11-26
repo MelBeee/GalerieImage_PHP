@@ -2,7 +2,7 @@
 
 session_start();
 $errorLogin ="";
-
+//blaba
 function validateLogin($user,$password)
 {
     $Fichier = "Authentification.txt";

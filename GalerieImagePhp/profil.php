@@ -7,7 +7,6 @@
  */
 echo "MODIFIER SON PROFIL";
 
-$_SESSION['LoggedIn'] = "MelBeee";
 $errorLogin = "";
 
 function VerifyOldPassword($password)
@@ -34,6 +33,7 @@ function WriteInFile($password, $oldpassword)
     if($AUTHENTIFICATION = file_get_contents($Fichier))
     {
         $AUTHENTIFICATION = str_replace($oldvar, "", $AUTHENTIFICATION);
+
         file_put_contents($Fichier, $AUTHENTIFICATION);
     }
     if($handle = fopen($Fichier, 'a'))

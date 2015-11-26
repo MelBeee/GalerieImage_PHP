@@ -1,7 +1,8 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
+
     session_start();
-}
+
+
 $errorLogin ="";
 function validateLogin($user,$password)
 {
@@ -19,16 +20,20 @@ function validateLogin($user,$password)
 }
 if(isset($_POST['Connecter']))
 {
+
+
     if(empty($_POST['username']) && empty($_POST['password']))
     {
         $errorLogin = 'Les deux champs ne peuvent être vide';
     }
     else
     {
+        echo "apres session";
         if(validateLogin($_POST['username'],$_POST['password']))
         {
             // save username dans variable session LoggedIn
-            $SESSION['LoggedIn'] = $_POST['username'];
+            $_SESSION['LoggedIn'] = $_POST['username'];
+
             // redirect sur Index
             header("Location: Index.php");
         }
@@ -36,6 +41,7 @@ if(isset($_POST['Connecter']))
         {
             $errorLogin = "Authentification non reussie";
         }
+        echo "avant session";
     }
 }
 echo "<form action='' method='post' accept-charset='UTF-8'>

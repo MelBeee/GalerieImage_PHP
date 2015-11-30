@@ -2,6 +2,15 @@
 
     session_start();
 
+			echo "<!DOCTYPE html>";
+            echo "<html>";
+            echo "<head>";
+            echo "<title>Login</title>";
+            echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
+                 <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
+                 <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
+            echo "</head>";
+			echo "<body  style=\"background-color:#777777\">";
 
 $errorLogin ="";
 function validateLogin($user,$password)
@@ -28,7 +37,6 @@ if(isset($_POST['Connecter']))
     }
     else
     {
-        echo "apres session";
         if(validateLogin($_POST['username'],$_POST['password']))
         {
             // save username dans variable session LoggedIn
@@ -41,21 +49,35 @@ if(isset($_POST['Connecter']))
         {
             $errorLogin = "Authentification non reussie";
         }
-        echo "avant session";
     }
 }
 echo "<form action='' method='post' accept-charset='UTF-8'>
-                                <div class='input-group'>
-                                  Nom d'usager : <input id='username' type='text' class='form-control' name='username' value='' placeholder='Nom d&#39;usager'>
-                                </div>
-                                <div class='input-group'>
-                                  Mot de passe : <input id='password' type='password' class='form-control' name='password' value='' placeholder='Mot de passe'>
-                                </div>
-                                <button type='submit' name='Connecter'  class='btn btn-default'>Se connecter</button>";
-if($errorLogin!="")
+<div class='container'>
+	<div class='row'>
+		<div class='col-md-offset-5 col-md-3'>
+            <div class='form-login'>
+				<h4>Connection</h4>
+				<input type='text' id='username' class='form-control input-sm chat-input' name='username' value='' placeholder='Nom d&#39;usager' />
+				</br>
+				<input type='password' id='password' class='form-control input-sm chat-input' name='password' value='' placeholder='Mot de passe'' />
+				</br>
+				<div class='wrapper'>
+					<span class='group-btn'>
+						<div class='col-sm-6 col-sm-offset-3'>
+							<input type='submit' name='Connecter' id='Connecter' class='form-control btn btn-login' value='Se Connecter'>
+						</div>
+					</span>
+				</div>
+            </div>
+        </div>
+	</div>
+</div>";
+
+if($errorLogin!='')
 {
-    echo "<div>
-           $errorLogin
-          </div>";
+    echo "<div> $errorLogin </div>";
 }
-echo  "</form>";
+
+echo "</form>";
+echo "</body>";
+echo "</html>";

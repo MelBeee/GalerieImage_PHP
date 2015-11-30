@@ -10,7 +10,7 @@
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
                  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
             echo "</head>";
-			echo "<body  style=\"background-color:#777777\">";
+			echo "<body  style=\"background-color:#A4D36B\">";
 
 if(isset($_SESSION['LoggedIn']))
 {
@@ -76,7 +76,7 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
     <div class=\"container\">\n
             <div class=\"navbar-header\">\n
                 <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\"></button>
-                <p style=\"color:white; font-size:30px;\"> Reseau Admission </p>
+                <p style=\"color:white; font-size:30px;\"> Galerie d'Image </p>
             </div>\n
         <div class=\"navbar-collapse collapse\">\n
             <ul class=\"nav navbar-nav\">\n
@@ -88,25 +88,29 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
         </div>
     </div>
 </div>
-<div class='container'>
-	<div class='row'>
-		<div class='col-md-offset-5 col-md-3'>
-            <div class='form-login'>
-				<h4>Connection</h4>
-				<input type='text' id='username' class='form-control input-sm chat-input' name='username' value='' placeholder='Nom d&#39;usager' />
-				</br>
-				<input type='password' id='password' class='form-control input-sm chat-input' name='password' value='' placeholder='Mot de passe'' />
-				</br>
-				<div class='wrapper'>
-					<span class='group-btn'>
-						<div class='col-sm-6 col-sm-offset-3'>
-							<input type='submit' name='Connecter' id='Connecter' class='form-control btn btn-login' value='Se Connecter'>
-						</div>
-					</span>
-				</div>
-            </div>
-        </div>
-
+<div class='container' style='position:absolute; top:20%;'>
+    <div class='row'>
+    	<div class='col-md-4 col-md-offset-4'>
+    		<div class='panel panel-default'>
+			  	<div class='panel-heading'>
+			    	<h3 class='panel-title'>Connexion</h3>
+			 	</div>
+			  	<div class='panel-body'>
+			    	<form accept-charset='UTF-8' role='form'>
+                    <fieldset>
+			    	  	<div class='form-group'>
+			    		    <input class='form-control' id='username' placeholder='Nom utilisateur' name='username' type='text'>
+			    		</div>
+			    		<div class='form-group'>
+			    			<input class='form-control' id='password' placeholder='Mot de Passe' name='password' type='password'>
+			    		</div>
+			    		<input class='btn btn-lg btn-success btn-block' name='Connecter' id='Connecter' type='submit' value='Se connecter'>
+			    	</fieldset>
+			      	</form>
+			    </div>
+			</div>
+		</div>
+	</div>
 </div>";
 
 if($errorLogin!='')
@@ -115,5 +119,16 @@ if($errorLogin!='')
 }
 
 echo "</form>";
+echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
+            <div class='container'>
+                <div class='navbar-header'>";
+                    if(isset($_SESSION['LoggedIn']))
+                    {
+                    echo "<p><h5 style='color:white;'>Connecte en tant que".$_SESSION['LoggedIn']."</h5></p>";
+                    }
+                    echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
+echo "          </div>
+            </div>
+        </div>";
 echo "</body>";
 echo "</html>";

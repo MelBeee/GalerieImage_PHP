@@ -13,7 +13,6 @@
 
      function ProccessComment()
      {
-
          $handle = fopen("Commentaire.txt", "r");
          if ($handle)
          {

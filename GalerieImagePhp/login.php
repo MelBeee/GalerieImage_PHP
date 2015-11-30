@@ -12,6 +12,13 @@
             echo "</head>";
 			echo "<body  style=\"background-color:#777777\">";
 
+if(isset($_SESSION['LoggedIn']))
+{
+    session_unset($_SESSION['LoggedIn']);
+    session_destroy();
+    header("Location: login.php");
+}
+
 $errorLogin ="";
 function validateLogin($user,$password)
 {
@@ -29,8 +36,6 @@ function validateLogin($user,$password)
 }
 if(isset($_POST['Connecter']))
 {
-
-
     if(empty($_POST['username']) && empty($_POST['password']))
     {
         $errorLogin = 'Les deux champs ne peuvent être vide';
@@ -41,7 +46,6 @@ if(isset($_POST['Connecter']))
         {
             // save username dans variable session LoggedIn
             $_SESSION['LoggedIn'] = $_POST['username'];
-
             // redirect sur Index
             header("Location: Index.php");
         }
@@ -51,7 +55,39 @@ if(isset($_POST['Connecter']))
         }
     }
 }
+else if (isset($_POST['PageIndex']))
+{
+    header("Location: index.php");
+}
+else if (isset($_POST['PageProfil']))
+{
+    header("Location: profil.php");
+}
+else if (isset($_POST['PageAdmin']))
+{
+    header("Location: admin.php");
+}
+else if (isset($_POST['PageConnecter']))
+{
+    header("Location: login.php");
+}
 echo "<form action='' method='post' accept-charset='UTF-8'>
+<div class=\"navbar navbar-inverse navbar-fixed-top\">\n
+    <div class=\"container\">\n
+            <div class=\"navbar-header\">\n
+                <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\"></button>
+                <p style=\"color:white; font-size:30px;\"> Reseau Admission </p>
+            </div>\n
+        <div class=\"navbar-collapse collapse\">\n
+            <ul class=\"nav navbar-nav\">\n
+            <li><a type='submit' name='PageIndex'>  Index  </a></li>\n
+            <li><a type='submit' name='PageProfil'>  Profil  </a></li>\n
+            <li><a type='submit' name='PageAdmin'>  Admin  </a></li>\n
+            <li><a type='submit' name='PageConnecter'>Connexion</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
 <div class='container'>
 	<div class='row'>
 		<div class='col-md-offset-5 col-md-3'>
@@ -70,7 +106,7 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
 				</div>
             </div>
         </div>
-	</div>
+
 </div>";
 
 if($errorLogin!='')

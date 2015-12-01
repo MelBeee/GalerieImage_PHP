@@ -1,6 +1,8 @@
 <?php
 
+if (session_status() == PHP_SESSION_NONE) {
     session_start();
+}
 
 			echo "<!DOCTYPE html>";
             echo "<html>";
@@ -38,7 +40,7 @@ if(isset($_POST['Connecter']))
 {
     if(empty($_POST['username']) && empty($_POST['password']))
     {
-        $errorLogin = 'Les deux champs ne peuvent être vide';
+        $errorLogin = 'Les deux champs ne peuvent etre vide';
     }
     else
     {
@@ -55,23 +57,8 @@ if(isset($_POST['Connecter']))
         }
     }
 }
-else if (isset($_POST['PageIndex']))
-{
-    header("Location: index.php");
-}
-else if (isset($_POST['PageProfil']))
-{
-    header("Location: profil.php");
-}
-else if (isset($_POST['PageAdmin']))
-{
-    header("Location: admin.php");
-}
-else if (isset($_POST['PageConnecter']))
-{
-    header("Location: login.php");
-}
-echo "<form action='' method='post' accept-charset='UTF-8'>
+
+echo "
 <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
     <div class=\"container\">\n
             <div class=\"navbar-header\">\n
@@ -80,15 +67,15 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
             </div>\n
         <div class=\"navbar-collapse collapse\">\n
             <ul class=\"nav navbar-nav\">\n
-            <li><a type='submit' name='PageIndex'>  Index  </a></li>\n
-            <li><a type='submit' name='PageProfil'>  Profil  </a></li>\n
-            <li><a type='submit' name='PageAdmin'>  Admin  </a></li>\n
-            <li><a type='submit' name='PageConnecter'>Connexion</a></li>
+                <li><a  href='index.php' >Index</a></li>\n
+                <li><a  href='profil.php' >Profil</a></li>\n
+                <li><a  href='admin.php' >Admin</a></li>\n
+                <li><a  href='login.php' >Connexion</a></li>
             </ul>
         </div>
     </div>
 </div>
-<div class='container' style='position:absolute; top:20%;'>
+<div class='container' style='margin-top:5%; margin-bottom: 5%'>
     <div class='row'>
     	<div class='col-md-4 col-md-offset-4'>
     		<div class='panel panel-default'>
@@ -96,7 +83,7 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
 			    	<h3 class='panel-title'>Connexion</h3>
 			 	</div>
 			  	<div class='panel-body'>
-			    	<form accept-charset='UTF-8' role='form'>
+			    	<form accept-charset='UTF-8' method='post' role='form'>
                     <fieldset>
 			    	  	<div class='form-group'>
 			    		    <input class='form-control' id='username' placeholder='Nom utilisateur' name='username' type='text'>
@@ -104,8 +91,12 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
 			    		<div class='form-group'>
 			    			<input class='form-control' id='password' placeholder='Mot de Passe' name='password' type='password'>
 			    		</div>
-			    		<input class='btn btn-lg btn-success btn-block' name='Connecter' id='Connecter' type='submit' value='Se connecter'>
-			    	</fieldset>
+			    		<input class='btn btn-lg btn-success btn-block' name='Connecter' id='Connecter' type='submit' value='Se connecter'>";
+			    		if($errorLogin!='')
+                        {
+                            echo "<div> $errorLogin </div>";
+                        }
+			    echo "</fieldset>
 			      	</form>
 			    </div>
 			</div>
@@ -113,10 +104,7 @@ echo "<form action='' method='post' accept-charset='UTF-8'>
 	</div>
 </div>";
 
-if($errorLogin!='')
-{
-    echo "<div> $errorLogin </div>";
-}
+
 
 echo "</form>";
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
@@ -124,7 +112,7 @@ echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
                 <div class='navbar-header'>";
                     if(isset($_SESSION['LoggedIn']))
                     {
-                    echo "<p><h5 style='color:white;'>Connecte en tant que".$_SESSION['LoggedIn']."</h5></p>";
+                    echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";
                     }
                     echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
 echo "          </div>

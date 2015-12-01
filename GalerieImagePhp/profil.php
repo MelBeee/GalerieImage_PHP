@@ -1,11 +1,8 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 201356187
- * Date: 2015-11-24
- * Time: 10:23
- */
-echo "MODIFIER SON PROFIL";
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 $errorLogin = "";
 
@@ -67,25 +64,78 @@ if(isset($_POST['ModifierPassword']))
         }
     }
 }
-else if(isset($_POST['RetourIndex']))
-{
-    header("Location: Index.php");
-}
+
+echo "<!DOCTYPE html>";
+echo "<html>";
+echo "<head>";
+echo "<title>Login</title>";
+echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
+                 <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
+                 <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
+echo "</head>";
+echo "<body  style=\"background-color:#A4D36B\">";
+echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
+    <div class=\"container\">\n
+            <div class=\"navbar-header\">\n
+                <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\"></button>
+                <p style=\"color:white; font-size:30px;\"> Galerie d'Image </p>
+            </div>\n
+        <div class=\"navbar-collapse collapse\">\n
+            <ul class=\"nav navbar-nav\">\n
+                <li><a  href='index.php' >Index</a></li>\n
+                <li><a  href='profil.php'>Profil</a></li>\n
+                <li><a  href='admin.php' >Admin</a></li>\n
+                <li><a  href='login.php' >Deconnection</a></li>
+            </ul>
+        </div>
+    </div>
+</div>";
 
 echo "<form action='' method='POST' >
-        <label for='OldPassword'>Mot de passe courant :</label>
-        <input maxlength='20' type='password' name='OldPassword'></br>
-        <label for='NewPassword'>Nouveau mot de passe :</label>
-        <input maxlength='20' type='password' name='NewPassword'></br>
-        <label for='VerifyPassword'>Confirmer mot de passe :</label>
-        <input maxlength='20' type='password' name='VerifyPassword'></br>
-        <input type='submit' name='ModifierPassword'></br>
-        <input type='submit' value='Retour' name='RetourIndex'></br>";
+<div class='container' style='margin-top:5%; margin-bottom: 5%'>
+    <div class='row'>
+    	<div class='col-md-4 col-md-offset-4'>
+    		<div class='panel panel-default'>
+			  	<div class='panel-heading'>
+			    	<h3 class='panel-title'>Changer le mot de passe</h3>
+			 	</div>
+			  	<div class='panel-body'>
+			    	<form accept-charset='UTF-8' role='form'>
+                    <fieldset>
+			    	  	<div class='form-group'>
+			    		    <input class='form-control' maxlength='20'  placeholder='Mot de passe courant' name='OldPassword' type='password'>
+			    		</div>
+			    		<div class='form-group'>
+			    			<input class='form-control' maxlength='20'  placeholder='Nouveau Mot de passe' name='NewPassword' type='password'>
+			    		</div>
+			    		<div class='form-group'>
+			    			<input class='form-control' maxlength='20'  placeholder='Confirmation Mot de passe' name='VerifyPassword' type='password'>
+			    		</div>
+			    		<input class='btn btn-lg btn-success btn-block' name='ModifierPassword' type='submit' value='Valider'>";
+                        if($errorLogin!='')
+                        {
+                            echo "<div> $errorLogin </div>";
+                        }
+                        echo "</fieldset>
+			      	</form>
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>";
 
-if($errorLogin!="")
+
+
+echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
+            <div class='container'>
+                <div class='navbar-header'>";
+if(isset($_SESSION['LoggedIn']))
 {
-    echo "<div>
-           $errorLogin
-          </div>";
+    echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";
 }
-echo  "</form>";
+echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
+echo "          </div>
+            </div>
+        </div>";
+echo "</body>";
+echo "</html>";

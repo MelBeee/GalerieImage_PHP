@@ -1,18 +1,13 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: 201356187
- * Date: 2015-11-24
- * Time: 10:23
- */
-$_SESSION['LoggedIn'] = 'admin';
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 if($_SESSION['LoggedIn'] != 'admin')
 {
     header("Location: Index.php");
 }
-
-echo "GESTION DES UTILISATEURS";
-
 
 if(isset($_POST['Supprimer']))
 {
@@ -26,26 +21,76 @@ if(isset($_POST['Supprimer']))
         file_put_contents($Fichier, $AUTHENTIFICATION);
     }
 }
-else if(isset($_POST['RetourIndex']))
+
+echo "<!DOCTYPE html>";
+echo "<html>";
+echo "<head>";
+echo "<title>Login</title>";
+echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
+                 <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
+                 <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
+echo "</head>";
+echo "<body  style=\"background-color:#A4D36B\">";
+echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
+    <div class=\"container\">\n
+            <div class=\"navbar-header\">\n
+                <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\"></button>
+                <p style=\"color:white; font-size:30px;\"> Galerie d'Image </p>
+            </div>\n
+        <div class=\"navbar-collapse collapse\">\n
+            <ul class=\"nav navbar-nav\">\n
+                <li><a  href='index.php' >Index</a></li>\n
+                <li><a  href='profil.php'>Profil</a></li>\n
+                <li><a  href='admin.php' >Admin</a></li>\n
+                <li><a  href='login.php' >Deconnection</a></li>
+            </ul>
+        </div>
+    </div>
+</div>";
+
+
+echo "<form action='' method='POST' >
+<div class='container' style='margin-top:5%; margin-bottom:5%;'>
+    <div class='row'>
+    	<div class='col-md-4 col-md-offset-4'>
+    		<div class='panel panel-default'>
+			  	<div class='panel-heading'>
+			    	<h3 class='panel-title'>Supprimer un usager</h3>
+			 	</div>
+			  	<div class='panel-body'>
+			    	<form accept-charset='UTF-8' role='form'>
+                    <fieldset>";
+                        $handle = fopen("Authentification.txt", 'r');
+                        if($handle)
+                        {
+                            while(($line = fgets($handle)) !== false)
+                            {
+                                if(substr_count($line, ':') > 0 && substr_count($line, 'admin') <= 0)
+                                {
+                                    $user = substr($line, 0, strpos($line,':'));
+                                    echo "<button class='btn btn-lg btn-success btn-block' name='Supprimer' type='submit' value='$line'>Supprimer $user</button>";
+                                    echo  "<br>";
+                                }
+                            }
+                        }
+                echo " </fieldset>
+			      	</form>
+			    </div>
+			</div>
+		</div>
+	</div>
+</div>";
+
+echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
+            <div class='container'>
+                <div class='navbar-header'>";
+if(isset($_SESSION['LoggedIn']))
 {
-    header("Location: Index.php");
+    echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";
 }
-
-
-echo "<form action='' method='POST' >";
-$handle = fopen("Authentification.txt", 'r');
-if($handle)
-{
-    while(($line = fgets($handle)) !== false)
-    {
-        if(substr_count($line, ':') > 0 && substr_count($line, 'admin') <= 0)
-        {
-            $user = substr($line, 0, strpos($line,':'));
-            echo "<button type='submit' value='$line' name='Supprimer'>Supprimer</button>";
-            echo $user . "<br>";
-        }
-    }
-}
-
-echo "  <input type='submit' value='Retour' name='RetourIndex'></br>";
-echo  "</form>";
+echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
+echo "          </div>
+            </div>
+        </div>";
+echo "</body>";
+echo "</html>";

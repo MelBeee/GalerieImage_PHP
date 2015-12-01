@@ -4,55 +4,46 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-			echo "<!DOCTYPE html>";
-            echo "<html>";
-            echo "<head>";
-            echo "<title>Login</title>";
-            echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
+echo "<!DOCTYPE html>";
+echo "<html>";
+echo "<head>";
+echo "<title>Login</title>";
+echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
                  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
-            echo "</head>";
-			echo "<body  style=\"background-color:#A4D36B\">";
+echo "</head>";
+echo "<body  style=\"background-color:#A4D36B\">";
 
-if(isset($_SESSION['LoggedIn']))
-{
+if (isset($_SESSION['LoggedIn'])) {
     session_unset($_SESSION['LoggedIn']);
     session_destroy();
     header("Location: login.php");
 }
 
-$errorLogin ="";
-function validateLogin($user,$password)
+$errorLogin = "";
+function validateLogin($user, $password)
 {
     $Fichier = "Authentification.txt";
     $var = $user . ":" . $password;
-    if($AUTHENTIFICATION = file_get_contents($Fichier))
-    {
+    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
         $existe = substr_count($AUTHENTIFICATION, $var);
     }
-    if($existe == 0)
-    {
+    if ($existe == 0) {
         return false;
     }
     return true;
 }
-if(isset($_POST['Connecter']))
-{
-    if(empty($_POST['username']) && empty($_POST['password']))
-    {
+
+if (isset($_POST['Connecter'])) {
+    if (empty($_POST['username']) && empty($_POST['password'])) {
         $errorLogin = 'Les deux champs ne peuvent etre vide';
-    }
-    else
-    {
-        if(validateLogin($_POST['username'],$_POST['password']))
-        {
+    } else {
+        if (validateLogin($_POST['username'], $_POST['password'])) {
             // save username dans variable session LoggedIn
             $_SESSION['LoggedIn'] = $_POST['username'];
             // redirect sur Index
             header("Location: Index.php");
-        }
-        else
-        {
+        } else {
             $errorLogin = "Authentification non reussie";
         }
     }
@@ -92,11 +83,10 @@ echo "
 			    			<input class='form-control' id='password' placeholder='Mot de Passe' name='password' type='password'>
 			    		</div>
 			    		<input class='btn btn-lg btn-success btn-block' name='Connecter' id='Connecter' type='submit' value='Se connecter'>";
-			    		if($errorLogin!='')
-                        {
-                            echo "<div> $errorLogin </div>";
-                        }
-			    echo "</fieldset>
+if ($errorLogin != '') {
+    echo "<div> $errorLogin </div>";
+}
+echo "</fieldset>
 			      	</form>
 			    </div>
 			</div>
@@ -105,16 +95,14 @@ echo "
 </div>";
 
 
-
 echo "</form>";
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";
-                    if(isset($_SESSION['LoggedIn']))
-                    {
-                    echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";
-                    }
-                    echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
+if (isset($_SESSION['LoggedIn'])) {
+    echo "<p><h5 style='color:white;'>Connecte en tant que " . $_SESSION['LoggedIn'] . "</h5></p>";
+}
+echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
 echo "          </div>
             </div>
         </div>";

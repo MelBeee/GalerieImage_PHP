@@ -4,18 +4,15 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-if($_SESSION['LoggedIn'] != 'admin')
-{
+if ($_SESSION['LoggedIn'] != 'admin') {
     header("Location: Index.php");
 }
 
-if(isset($_POST['Supprimer']))
-{
+if (isset($_POST['Supprimer'])) {
     $Fichier = "Authentification.txt";
     $user = $_POST['Supprimer'];
 
-    if($AUTHENTIFICATION = file_get_contents($Fichier))
-    {
+    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
         $AUTHENTIFICATION = str_replace($user, "", $AUTHENTIFICATION);
 
         file_put_contents($Fichier, $AUTHENTIFICATION);
@@ -48,7 +45,6 @@ echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
     </div>
 </div>";
 
-
 echo "<form action='' method='POST' >
 <div class='container' style='margin-top:5%; margin-bottom:5%;'>
     <div class='row'>
@@ -60,20 +56,17 @@ echo "<form action='' method='POST' >
 			  	<div class='panel-body'>
 			    	<form accept-charset='UTF-8' role='form'>
                     <fieldset>";
-                        $handle = fopen("Authentification.txt", 'r');
-                        if($handle)
-                        {
-                            while(($line = fgets($handle)) !== false)
-                            {
-                                if(substr_count($line, ':') > 0 && substr_count($line, 'admin') <= 0)
-                                {
-                                    $user = substr($line, 0, strpos($line,':'));
-                                    echo "<button class='btn btn-lg btn-success btn-block' name='Supprimer' type='submit' value='$line'>Supprimer $user</button>";
-                                    echo  "<br>";
-                                }
-                            }
-                        }
-                echo " </fieldset>
+$handle = fopen("Authentification.txt", 'r');
+if ($handle) {
+    while (($line = fgets($handle)) !== false) {
+        if (substr_count($line, ':') > 0 && substr_count($line, 'admin') <= 0) {
+            $user = substr($line, 0, strpos($line, ':'));
+            echo "<button class='btn btn-lg btn-success btn-block' name='Supprimer' type='submit' value='$line'>Supprimer $user</button>";
+            echo "<br>";
+        }
+    }
+}
+echo " </fieldset>
 			      	</form>
 			    </div>
 			</div>
@@ -84,9 +77,8 @@ echo "<form action='' method='POST' >
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";
-if(isset($_SESSION['LoggedIn']))
-{
-    echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";
+if (isset($_SESSION['LoggedIn'])) {
+    echo "<p><h5 style='color:white;'>Connecte en tant que " . $_SESSION['LoggedIn'] . "</h5></p>";
 }
 echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
 echo "          </div>

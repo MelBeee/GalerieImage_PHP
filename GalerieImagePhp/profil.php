@@ -10,12 +10,10 @@ function VerifyOldPassword($password)
 {
     $Fichier = "Authentification.txt";
     $var = $_SESSION['LoggedIn'] . ":" . $password;
-    if($AUTHENTIFICATION = file_get_contents($Fichier))
-    {
+    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
         $existe = substr_count($AUTHENTIFICATION, $var);
     }
-    if($existe == 0)
-    {
+    if ($existe == 0) {
         return false;
     }
     return true;
@@ -27,39 +25,27 @@ function WriteInFile($password, $oldpassword)
     $var = $_SESSION['LoggedIn'] . ":" . $password;
     $oldvar = $_SESSION['LoggedIn'] . ":" . $oldpassword;
 
-    if($AUTHENTIFICATION = file_get_contents($Fichier))
-    {
+    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
         $AUTHENTIFICATION = str_replace($oldvar, "", $AUTHENTIFICATION);
 
         file_put_contents($Fichier, $AUTHENTIFICATION);
     }
-    if($handle = fopen($Fichier, 'a'))
-    {
+    if ($handle = fopen($Fichier, 'a')) {
         fwrite($handle, $var . "\n");
     }
 }
 
-if(isset($_POST['ModifierPassword']))
-{
-    if(empty($_POST['NewPassword']) && empty($_POST['OldPassword']) && empty($_POST['VerifyPassword']))
-    {
+if (isset($_POST['ModifierPassword'])) {
+    if (empty($_POST['NewPassword']) && empty($_POST['OldPassword']) && empty($_POST['VerifyPassword'])) {
         $errorLogin = 'Tous les champs doivent etre remplis';
-    }
-    else
-    {
-        if($_POST['NewPassword'] == $_POST['VerifyPassword'])
-        {
-            if(VerifyOldPassword($_POST['OldPassword']))
-            {
+    } else {
+        if ($_POST['NewPassword'] == $_POST['VerifyPassword']) {
+            if (VerifyOldPassword($_POST['OldPassword'])) {
                 WriteInFile($_POST['NewPassword'], $_POST['OldPassword']);
-            }
-            else
-            {
+            } else {
                 $errorLogin = 'Ancien mot de passe incorrecte';
             }
-        }
-        else
-        {
+        } else {
             $errorLogin = 'La confirmation du mot de passe est incorrecte';
         }
     }
@@ -112,11 +98,10 @@ echo "<form action='' method='POST' >
 			    			<input class='form-control' maxlength='20'  placeholder='Confirmation Mot de passe' name='VerifyPassword' type='password'>
 			    		</div>
 			    		<input class='btn btn-lg btn-success btn-block' name='ModifierPassword' type='submit' value='Valider'>";
-                        if($errorLogin!='')
-                        {
-                            echo "<div> $errorLogin </div>";
-                        }
-                        echo "</fieldset>
+if ($errorLogin != '') {
+    echo "<div> $errorLogin </div>";
+}
+echo "</fieldset>
 			      	</form>
 			    </div>
 			</div>
@@ -125,13 +110,11 @@ echo "<form action='' method='POST' >
 </div>";
 
 
-
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";
-if(isset($_SESSION['LoggedIn']))
-{
-    echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";
+if (isset($_SESSION['LoggedIn'])) {
+    echo "<p><h5 style='color:white;'>Connecte en tant que " . $_SESSION['LoggedIn'] . "</h5></p>";
 }
 echo "<p><h8 style='color:white;'>Application fait par Melissa Boucher et Charlie Laplante</h8></p>";
 echo "          </div>

@@ -1,4 +1,3 @@
-Fred:chat
 admin:admin
 Charlie:1234
 MelBeee:asdf

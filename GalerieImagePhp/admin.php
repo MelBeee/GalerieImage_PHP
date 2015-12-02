@@ -54,7 +54,7 @@ echo "<form action='' method='POST' >
 			    	<h3 class='panel-title'>Supprimer un usager</h3>
 			 	</div>
 			  	<div class='panel-body'>
-			    	<form accept-charset='UTF-8' role='form'>
+
                     <fieldset>";
 $handle = fopen("Authentification.txt", 'r');
 if ($handle) {
@@ -67,13 +67,27 @@ if ($handle) {
     }
 }
 echo " </fieldset>
-			      	</form>
 			    </div>
 			</div>
 		</div>
 	</div>
 </div>";
+$handleLog = fopen('LogFile.txt', 'r');
 
+if($handleLog)
+{
+    while (($lineLog = fgets($handleLog)) !== false) {
+            $Array[] = $lineLog;
+    }
+    if (!empty($Array)) {
+        for ($i = count($Array) - 1; $i >= count($Array) - 10 ; $i--) {
+            echo $Array[$i].'<br>';
+        }
+
+    }
+
+
+}
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";

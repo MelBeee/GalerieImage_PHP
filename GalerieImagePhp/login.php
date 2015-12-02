@@ -3,11 +3,13 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+date_default_timezone_set("America/New_York");
 
 echo "<!DOCTYPE html>";
 echo "<html>";
 echo "<head>";
 echo "<title>Login</title>";
+echo "<meta charset='UTF-8'>";
 echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
                  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
@@ -18,6 +20,16 @@ if (isset($_SESSION['LoggedIn'])) {
     session_unset($_SESSION['LoggedIn']);
     session_destroy();
     header("Location: login.php");
+}
+if(isset($_GET['deconnecter']))
+{
+    unset($_COOKIE['Connected']);
+    setcookie('Connected', '', time() - 3600, '/');
+}
+if(isset($_COOKIE['Connected']))
+{
+    $_SESSION['LoggedIn'] = $_COOKIE['Connected'];
+    header("Location: Index.php");
 }
 
 $errorLogin = "";
@@ -34,6 +46,16 @@ function validateLogin($user, $password)
     return true;
 }
 
+function WriteInLog($Username,$Date,$Ip)
+{
+    $Fichier = "LogFile.txt";
+    $var = $Username.":".$Date.":".$Ip;
+
+    if ($handle = fopen($Fichier, 'a')) {
+        fwrite($handle, $var . "\n");
+    }
+}
+
 if (isset($_POST['Connecter'])) {
     if (empty($_POST['username']) && empty($_POST['password'])) {
         $errorLogin = 'Les deux champs ne peuvent etre vide';
@@ -41,6 +63,12 @@ if (isset($_POST['Connecter'])) {
         if (validateLogin($_POST['username'], $_POST['password'])) {
             // save username dans variable session LoggedIn
             $_SESSION['LoggedIn'] = $_POST['username'];
+            if(isset($_POST['Connected']))
+            {
+                setcookie("Connected", $_POST['username'], time()+86400 , "/");
+            }
+            WriteInLog($_POST['username'],date('j M Y, G:i:s'),$_SERVER['REMOTE_ADDR']);
+
             // redirect sur Index
             header("Location: Index.php");
         } else {
@@ -86,6 +114,7 @@ echo "
 if ($errorLogin != '') {
     echo "<div> $errorLogin </div>";
 }
+echo "<input type='checkbox' name='Connected' value='Connected'> Rester Connecté";
 echo "</fieldset>
 			      	</form>
 			    </div>

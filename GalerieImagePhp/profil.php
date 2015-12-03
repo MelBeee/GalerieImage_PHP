@@ -51,12 +51,26 @@ if (isset($_POST['ModifierPassword'])) {
     }
 }
 
+if(isset($_POST['ResterConnecter']))
+{
+    if(isset($_POST['Connected']))
+    {
+        setcookie("Connected", $_SESSION['LoggedIn'], time()+86400 , "/");
+    }
+}
+if(isset($_COOKIE['Connected']))
+{
+    $_SESSION['LoggedIn'] = $_COOKIE['Connected'];
+    header("Location: Index.php");
+}
+
 echo "<!DOCTYPE html>";
 echo "<html>";
 echo "<head>";
-echo "<title>Login</title>";
+echo "<title>Profil</title>";
 echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
+                 <link rel='stylesheet' href='CheckedBox.css'>
                  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
 echo "</head>";
 echo "<body  style=\"background-color:#A4D36B\">";
@@ -69,9 +83,12 @@ echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
         <div class=\"navbar-collapse collapse\">\n
             <ul class=\"nav navbar-nav\">\n
                 <li><a  href='index.php' >Index</a></li>\n
-                <li><a  href='profil.php'>Profil</a></li>\n
-                <li><a  href='admin.php' >Admin</a></li>\n
-                <li><a  href='login.php' >Deconnection</a></li>
+                <li><a  href='profil.php'>Profil</a></li>\n";
+                if($_SESSION['LoggedIn'] == "admin")
+                {
+                    echo "<li><a  href='admin.php' >Admin</a></li>\n";
+                }
+                echo "<li><a  href='login.php?deconnecter=true' name='Logout'>Deconnection</a></li>
             </ul>
         </div>
     </div>
@@ -98,14 +115,33 @@ echo "<form action='' method='POST' >
 			    			<input class='form-control' maxlength='20'  placeholder='Confirmation Mot de passe' name='VerifyPassword' type='password'>
 			    		</div>
 			    		<input class='btn btn-lg btn-success btn-block' name='ModifierPassword' type='submit' value='Valider'>";
-if ($errorLogin != '') {
-    echo "<div> $errorLogin </div>";
-}
-echo "</fieldset>
+                    if ($errorLogin != '') {
+                        echo "<div> $errorLogin </div>";
+                    }
+                    echo "</fieldset>
 			      	</form>
 			    </div>
 			</div>
 		</div>
+	</div>
+	<br>
+	<div class='row'>
+        <div class='col-md-4 col-md-offset-4'>
+            <div class='panel panel-default'>
+                <div class='panel-heading'>
+                    <h3 class='panel-title'>Rester connecter pendant 24 heures</h3>
+                </div>
+                <div class='panel-body'>
+                    <div class='funkyradio'>
+                        <div class='funkyradio-success'>
+                            <input type='checkbox' name='Connected' id='checkbox3' checked/>
+                            <label for='checkbox3'>Rester Connecte</label>
+                        </div>
+                    </div>
+                    <input class='btn btn-lg btn-success btn-block' name='ResterConnecter' type='submit' value='Valider'>
+                </div>
+            </div>
+        </div>
 	</div>
 </div>";
 

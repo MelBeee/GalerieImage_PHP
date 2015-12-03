@@ -63,7 +63,7 @@ if(isset($_SESSION['LoggedIn']))
     echo "<!DOCTYPE html>";
     echo "<html>";
     echo "<head>";
-    echo "<title>Login</title>";
+    echo "<title>Index</title>";
     echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">
                 <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
@@ -78,9 +78,12 @@ if(isset($_SESSION['LoggedIn']))
                     <div class=\"navbar-collapse collapse\">\n
                         <ul class=\"nav navbar-nav\">\n
                         <li><a  href='index.php' >Index</a></li>\n
-                        <li><a  href='profil.php' >Profil</a></li>\n
-                        <li><a  href='admin.php' >Admin</a></li>\n
-                        <li><a  href='login.php?deconnecter=true' name='Logout'>Deconnection</a></li>
+                        <li><a  href='profil.php' >Profil</a></li>\n";
+                        if($_SESSION['LoggedIn'] == "admin")
+                        {
+                            echo "<li><a  href='admin.php' >Admin</a></li>\n";
+                        }
+                        echo "<li><a  href='login.php?deconnecter=true' name='Logout'>Deconnection</a></li>
                         </ul>
                     </div>
                 </div>

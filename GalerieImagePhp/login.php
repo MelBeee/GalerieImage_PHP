@@ -16,20 +16,20 @@ echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/
 echo "</head>";
 echo "<body  style=\"background-color:#A4D36B\">";
 
-if (isset($_SESSION['LoggedIn'])) {
-    session_unset($_SESSION['LoggedIn']);
-    session_destroy();
-    header("Location: login.php");
-}
 if(isset($_GET['deconnecter']))
 {
     unset($_COOKIE['Connected']);
     setcookie('Connected', '', time() - 3600, '/');
+    if (isset($_SESSION['LoggedIn'])) {
+        session_unset($_SESSION['LoggedIn']);
+        session_destroy();
+        header("Location: login.php");
+    }
 }
-if(isset($_COOKIE['Connected']))
+
+if(isset($_SESSION['LoggedIn']))
 {
-    $_SESSION['LoggedIn'] = $_COOKIE['Connected'];
-    header("Location: Index.php");
+    header("Location: index.php");
 }
 
 $errorLogin = "";
@@ -49,7 +49,7 @@ function validateLogin($user, $password)
 function WriteInLog($Username,$Date,$Ip)
 {
     $Fichier = "LogFile.txt";
-    $var = $Username.":".$Date.":".$Ip;
+    $var = $Username.":".$Date."/".$Ip."-";
 
     if ($handle = fopen($Fichier, 'a')) {
         fwrite($handle, $var . "\n");
@@ -63,10 +63,6 @@ if (isset($_POST['Connecter'])) {
         if (validateLogin($_POST['username'], $_POST['password'])) {
             // save username dans variable session LoggedIn
             $_SESSION['LoggedIn'] = $_POST['username'];
-            if(isset($_POST['Connected']))
-            {
-                setcookie("Connected", $_POST['username'], time()+86400 , "/");
-            }
             WriteInLog($_POST['username'],date('j M Y, G:i:s'),$_SERVER['REMOTE_ADDR']);
 
             // redirect sur Index
@@ -88,7 +84,6 @@ echo "
             <ul class=\"nav navbar-nav\">\n
                 <li><a  href='index.php' >Index</a></li>\n
                 <li><a  href='profil.php' >Profil</a></li>\n
-                <li><a  href='admin.php' >Admin</a></li>\n
                 <li><a  href='login.php' >Connexion</a></li>
             </ul>
         </div>
@@ -114,7 +109,7 @@ echo "
 if ($errorLogin != '') {
     echo "<div> $errorLogin </div>";
 }
-echo "<input type='checkbox' name='Connected' value='Connected'> Rester Connecté";
+
 echo "</fieldset>
 			      	</form>
 			    </div>

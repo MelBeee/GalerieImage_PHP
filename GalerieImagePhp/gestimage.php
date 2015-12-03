@@ -22,8 +22,10 @@ if (isset($_POST['SupprimerImage'])) {
 }
 
 if (isset($_POST['EnvoyerCommentaire'])) {
-    if ($Handle = fopen($Fichier, 'a')) {
-        fwrite($Handle, "*" . $_SESSION['LoggedIn'] . "_" . $_POST['LeCommentaire'] . "/" . date('j M Y, G:i:s') . "¯" . "~" . $_SESSION['ImageCommentaire'] . "\n");
+    if ($_POST['LeCommentaire'] != "") {
+        if ($Handle = fopen($Fichier, 'a')) {
+            fwrite($Handle, "*" . $_SESSION['LoggedIn'] . "_" . $_POST['LeCommentaire'] . "/" . date('j M Y, G:i:s') . "¯" . "~" . $_SESSION['ImageCommentaire'] . "\n");
+        }
     }
 }
 
@@ -32,9 +34,15 @@ if (isset($_GET['image'])) {
     gestImageMain();
 }
 
+function getStringBetween($str, $from, $to)
+{
+    $sub = substr($str, strpos($str, $from) + strlen($from), strlen($str));
+    return substr($sub, 0, strpos($sub, $to));
+}
+
 function getProprioImage()
 {
-    $ProprioImage = "";
+    $ProprioImage = "rien-";
     $Fichier = "Photo.txt";
     if ($PHOTO = file_get_contents($Fichier)) {
         $handle = fopen("Photo.txt", 'r');
@@ -47,8 +55,7 @@ function getProprioImage()
     }
     $Trouver = false;
     for ($i = 0; $i < count($Array) && !$Trouver; $i++) {
-        $substring = substr($_SESSION['ImageCommentaire'], strpos($_SESSION['ImageCommentaire'], '/'), sizeof($_SESSION['ImageCommentaire']) - 6);
-        if (substr_count($Array[$i], $substring) > 0 && !$Trouver) {
+        if (!$Trouver && $_SESSION['LoggedIn'] == substr($Array[$i], 0, strpos($Array[$i], '/')) &&  $_SESSION['ImageCommentaire'] == "image/".getStringBetween($Array[$i], '_', '¯')) {
             $ProprioImage = substr($Array[$i], 0, strpos($Array[$i], '/'));
             $Trouver = true;
         }
@@ -57,11 +64,7 @@ function getProprioImage()
     return $ProprioImage;
 }
 
-function getStringBetween($str, $from, $to)
-{
-    $sub = substr($str, strpos($str, $from) + strlen($from), strlen($str));
-    return substr($sub, 0, strpos($sub, $to));
-}
+
 
 function ProccessComment()
 {
@@ -102,7 +105,7 @@ function gestImageMain()
     echo "<!DOCTYPE html>";
     echo "<html>";
     echo "<head>";
-    echo "<title>Login</title>";
+    echo "<title>Image</title>";
     echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
                  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
@@ -117,9 +120,12 @@ function gestImageMain()
                             <div class=\"navbar-collapse collapse\">\n
                                 <ul class=\"nav navbar-nav\">\n
                                     <li><a  href='index.php' >Index</a></li>\n
-                                    <li><a  href='profil.php'>Profil</a></li>\n
-                                    <li><a  href='admin.php' >Admin</a></li>\n
-                                    <li><a  href='login.php' >Deconnection</a></li>
+                                    <li><a  href='profil.php'>Profil</a></li>\n";
+                                    if($_SESSION['LoggedIn'] == "admin")
+                                    {
+                                        echo "<li><a  href='admin.php' >Admin</a></li>\n";
+                                    }
+                                    echo "<li><a  href='login.php?deconnecter=true' name='Logout'>Deconnection</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -143,7 +149,7 @@ function gestImageMain()
 
     echo "<div class='row'>";
     echo "<div class='col-md-offset-4'>";
-echo "
+    echo "
 <form method='POST' enctype='multipart/form-data'>
 <div class='col-lg-8 col-sm-12 text-center'>
     <div class='well'>
@@ -155,7 +161,7 @@ echo "
             </span>
         </div>";
     ProccessComment();
-echo "</div>
+    echo "</div>
     </div>
 </form>";
     echo "</div> </div>";

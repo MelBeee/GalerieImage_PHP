@@ -1,3 +1,9 @@
 admin:admin
-Charlie:1234
+Charlie:asdf
 MelBeee:asdf
+Francis:asdf
+Francois:asdf
+Frederic:asdf
+Xavier:asdf
+
+Dominic:1234

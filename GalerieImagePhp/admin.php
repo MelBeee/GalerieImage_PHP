@@ -19,10 +19,16 @@ if (isset($_POST['Supprimer'])) {
     }
 }
 
+function getStringBetween($str, $from, $to)
+{
+    $sub = substr($str, strpos($str, $from) + strlen($from), strlen($str));
+    return substr($sub, 0, strpos($sub, $to));
+}
+
 echo "<!DOCTYPE html>";
 echo "<html>";
 echo "<head>";
-echo "<title>Login</title>";
+echo "<title>Admin</title>";
 echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
                  <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
                  <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
@@ -37,9 +43,12 @@ echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
         <div class=\"navbar-collapse collapse\">\n
             <ul class=\"nav navbar-nav\">\n
                 <li><a  href='index.php' >Index</a></li>\n
-                <li><a  href='profil.php'>Profil</a></li>\n
-                <li><a  href='admin.php' >Admin</a></li>\n
-                <li><a  href='login.php' >Deconnection</a></li>
+                <li><a  href='profil.php'>Profil</a></li>\n";
+                if($_SESSION['LoggedIn'] == "admin")
+                {
+                    echo "<li><a  href='admin.php' >Admin</a></li>\n";
+                }
+                echo "<li><a  href='login.php?deconnecter=true' name='Logout'>Deconnection</a></li>
             </ul>
         </div>
     </div>
@@ -53,7 +62,7 @@ echo "<form action='' method='POST' >
 			  	<div class='panel-heading'>
 			    	<h3 class='panel-title'>Supprimer un usager</h3>
 			 	</div>
-			  	<div class='panel-body'>
+			  	<div class='panel-body'  style='overflow:scroll; height:350px;'>
 
                     <fieldset>";
 $handle = fopen("Authentification.txt", 'r');
@@ -70,24 +79,60 @@ echo " </fieldset>
 			    </div>
 			</div>
 		</div>
-	</div>
-</div>";
-$handleLog = fopen('LogFile.txt', 'r');
+	</div>";
 
+echo "
+<div class='row'>
+    	<div class='col-md-4 col-md-offset-4'>
+    		<div class='panel panel-default'>
+			  	<div class='panel-heading'>";
+$handleLog = fopen('LogFile.txt', 'r');
 if($handleLog)
 {
+    echo "
+    <div class='well'>
+    <table class='table'>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Utilisateur</th>
+          <th>Date</th>
+          <th>Adresse IP</th>
+        </tr>
+      </thead>
+      <tbody>";
     while (($lineLog = fgets($handleLog)) !== false) {
             $Array[] = $lineLog;
     }
     if (!empty($Array)) {
+        $cpt = 1;
         for ($i = count($Array) - 1; $i >= count($Array) - 10 ; $i--) {
-            echo $Array[$i].'<br>';
+            if($i >= 0)
+            {
+                $username= substr($Array[$i], 0, strpos($Array[$i], ':'));
+                $date =  getStringBetween($Array[$i], ':', '/');
+                $ipadress = getStringBetween($Array[$i], '/', '-');
+                echo "
+            <tr>
+              <td>$cpt</td>
+              <td>$username</td>
+              <td>$date</td>
+              <td>$ipadress</td>
+            </tr>";
+                $cpt++;
+            }
         }
-
     }
-
-
+    echo "</tbody>
+</table>
+</div>";
 }
+echo "        </div>
+            </div>
+        </div>
+    </div>
+</div>";
+
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";

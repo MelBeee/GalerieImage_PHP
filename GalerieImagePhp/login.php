@@ -3,8 +3,9 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+//Set le timezone pour que la fonction date retourne les bonnes valeurs
 date_default_timezone_set("America/New_York");
-
+//Echo début de page HTML
 echo "<!DOCTYPE html>";
 echo "<html>";
 echo "<head>";
@@ -16,6 +17,7 @@ echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/
 echo "</head>";
 echo "<body  style=\"background-color:#A4D36B\">";
 
+//Si la page a été envoyé par le button déconnecter alors on détruit le cookie et la session
 if(isset($_GET['deconnecter']))
 {
     unset($_COOKIE['Connected']);
@@ -26,13 +28,14 @@ if(isset($_GET['deconnecter']))
         header("Location: login.php");
     }
 }
-
+//Si la variable session existe déja on redirect tout de suite à la galerie d'image
 if(isset($_SESSION['LoggedIn']))
 {
     header("Location: index.php");
 }
-
+//Variable d'erreur
 $errorLogin = "";
+//Fonction qui valide le login
 function validateLogin($user, $password)
 {
     $Fichier = "Authentification.txt";
@@ -45,7 +48,7 @@ function validateLogin($user, $password)
     }
     return true;
 }
-
+//Fonction qui écrit dans le file qui garde en mémoire lorsqu'un usager se login
 function WriteInLog($Username,$Date,$Ip)
 {
     $Fichier = "LogFile.txt";
@@ -55,7 +58,7 @@ function WriteInLog($Username,$Date,$Ip)
         fwrite($handle, $var . "\n");
     }
 }
-
+//Si le post Connecter est envoyé
 if (isset($_POST['Connecter'])) {
     if (empty($_POST['username']) && empty($_POST['password'])) {
         $errorLogin = 'Les deux champs ne peuvent etre vide';
@@ -72,7 +75,7 @@ if (isset($_POST['Connecter'])) {
         }
     }
 }
-
+//Echo le menu
 echo "
 <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
     <div class=\"container\">\n
@@ -83,7 +86,6 @@ echo "
         <div class=\"navbar-collapse collapse\">\n
             <ul class=\"nav navbar-nav\">\n
                 <li><a  href='index.php' >Index</a></li>\n
-                <li><a  href='profil.php' >Profil</a></li>\n
                 <li><a  href='login.php' >Connexion</a></li>
             </ul>
         </div>
@@ -106,6 +108,7 @@ echo "
 			    			<input class='form-control' id='password' placeholder='Mot de Passe' name='password' type='password'>
 			    		</div>
 			    		<input class='btn btn-lg btn-success btn-block' name='Connecter' id='Connecter' type='submit' value='Se connecter'>";
+//Si la variable n'est pas vide on echo la variable d'erreur
 if ($errorLogin != '') {
     echo "<div> $errorLogin </div>";
 }
@@ -118,7 +121,7 @@ echo "</fieldset>
 	</div>
 </div>";
 
-
+//Echo le form le connexion
 echo "</form>";
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>

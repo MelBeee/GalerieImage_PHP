@@ -1,13 +1,14 @@
 <?php
+//Si la varaible session n'existe pas on la crée
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
+//Inclut la page gestion image
 include_once("gestimage.php");
 
 $ArrayPhoto = array();
 $errorLogin = "";
-
+//Fonction qui trie le fichier
 function trierdirectory($dir) {
     $ignored = array('.', '..', '.svn', '.htaccess');
 
@@ -22,28 +23,34 @@ function trierdirectory($dir) {
 
     return ($files) ? $files : false;
 }
-
+//Check si l'usager est logged in
 if(isset($_SESSION['LoggedIn']))
 {
     $extension="";
-
+    //Si le Post a été envoyé par le button de soumission d'image
     if(isset($_POST['GestionImageSubmit']))
     {
+        //Check si le TitreImage a été envoyé
         if(isset($_POST['TitreImage']) && $_POST['TitreImage'] != "")
         {
+            //Si le input file Image a été envoyé
             if(isset($_FILES['ImageToUpload']['name']))
             {
+                //Get l'extension du fichier
                 $extension = pathinfo($_FILES["ImageToUpload"]["name"], PATHINFO_EXTENSION);
                 if($extension == "jpg" || $extension == "png" || $extension == "gif" || $extension == "jpeg" ||  $extension == "JPG" || $extension == "PNG" || $extension == "GIF" || $extension == "JPEG")
                 {
+                    //Set le timezone pour que la fonction date retourne les bonnes valeurs
                     date_default_timezone_set("America/New_York");
+                    //Ajoute un unique id a la photo pour son enregistrement
                     $uploadfile = uniqid("").".".$extension;
-
+                    //Ouvre le fichier Photo.txt
                     if($Handle = fopen("Photo.txt",'a'))
                     {
+                        //Écrit dans le fichier photo.txt le nom de la nouvelle photo sauvegarder
                         fwrite($Handle,$_SESSION['LoggedIn']. "/" . $_POST['TitreImage'] . "~" . date('j M Y, G:i:s') . "_" . $uploadfile . "¯" . "\n" );
                     }
-
+                        //Copie le file choisis dans le dossier image
                     if(move_uploaded_file($_FILES['ImageToUpload']['tmp_name'], "image/".$uploadfile))
                     {
                         header("Location: index.php");
@@ -60,6 +67,7 @@ if(isset($_SESSION['LoggedIn']))
             $errorLogin = "Il faut un titre a l'image";
         }
     }
+    //Echo le début de la page d'index
     echo "<!DOCTYPE html>";
     echo "<html>";
     echo "<head>";
@@ -70,6 +78,7 @@ if(isset($_SESSION['LoggedIn']))
     echo "</head>";
     echo "<body  style=\"background-color:#A4D36B\">";
     echo "<div class=\"navbar navbar-inverse navbar-fixed-top\">\n
+
                 <div class=\"container\">\n
                         <div class=\"navbar-header\">\n
                             <button type=\"button\" class=\"navbar-toggle\" data-toggle=\"collapse\" data-target=\".navbar-collapse\"></button>
@@ -79,10 +88,12 @@ if(isset($_SESSION['LoggedIn']))
                         <ul class=\"nav navbar-nav\">\n
                         <li><a  href='index.php' >Index</a></li>\n
                         <li><a  href='profil.php' >Profil</a></li>\n";
+                        //Si la valeur de la variable session LoggedIn vaut admin alors on ajoute l'onglet admin
                         if($_SESSION['LoggedIn'] == "admin")
                         {
                             echo "<li><a  href='admin.php' >Admin</a></li>\n";
                         }
+                        //déconnection envoit un get a la page login pour qu'elle supprime les coockies et sessions
                         echo "<li><a  href='login.php?deconnecter=true' name='Logout'>Deconnection</a></li>
                         </ul>
                     </div>
@@ -90,7 +101,9 @@ if(isset($_SESSION['LoggedIn']))
             </div>";
     echo "<div class='container' style='margin-top:5%; margin-bottom: 5%'>";
 
+    //
     $directory = "image";
+    //Check si le dossier est vide
     $is_empty = (bool) (count(scandir($directory)) == 2);
     if (!$is_empty)
     {
@@ -98,32 +111,39 @@ if(isset($_SESSION['LoggedIn']))
         echo "<div class='row'>
               <form action='gestimage.php' method='GET' enctype='multipart/form-data'>
 		      <div class='list-group gallery'>";
-
+        //Ouvre le fichier photo.txt Pour le lire
         $handle = fopen("Photo.txt", 'r');
         if($handle)
         {
+            //Lis les informations et les sauvegardes dans un tableau
             while(($line = fgets($handle)) !== false)
             {
                 $Array[] = $line;
             }
+            //Ferme le dossier
             fclose($handle);
         }
+        //Si le tableau n'est pas vide
         if(!empty($Array))
         {
+            //Lis ce que contient le tableau en partant de la fin
             for($i = count($Array)-1 ; $i >= 0 ; $i--)
             {
                 if($Array[$i] != "")
                 {
+                     //Décortique la ligne dans le tableau pour trouver les informations nécessaires lors de l'affichage
                     $line = $Array[$i];
                     $User = substr($line, 0, strpos($line, '/'));
                     $Titre = getStringBetween($line, '/', '~');
                     $Date = getStringBetween($line, '~', '_');
                     $Guid = getStringBetween($line, '_', '¯');
                     $NbCommentaire = 0;
+                    //Check le nombre de ligne dans le fichier qui sauvegarde les commentaires (Savoir combien il y de commentaire)
                     if($Commentaire = file_get_contents($Fichier))
                     {
                         $NbCommentaire = substr_count($Commentaire,$Guid);
                     }
+                    //Fait apparaitre photo et information
                     echo "<div class='col-sm-4 col-xs-6 col-md-3 col-lg-3'>
                   <a class='thumbnail fancybox'  rel='ligthbox' href='gestimage.php?image=image/$Guid' name='ImageClicker' type='submit'>
                      <img class='img-responsive' style='max-height:150px; max-width: 200px; height:auto; width:auto; display:block;'   src='image/$Guid' />
@@ -163,6 +183,7 @@ if(isset($_SESSION['LoggedIn']))
 			    		<input class='btn btn-lg btn-success btn-block' name='GestionImageSubmit' type='submit' value='Valider'>
                      </fieldset>
 			      	</form>";
+                    //Si la variable d'erreur est vide on ne la montre  pas
                     if($errorLogin!='')
                     {
                         echo "<div> $errorLogin </div>";
@@ -175,6 +196,7 @@ if(isset($_SESSION['LoggedIn']))
     echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";
+    //Si la variable session n'est pas vide alors on montre qui est connecter
     if(isset($_SESSION['LoggedIn']))
     {
         echo "<p><h5 style='color:white;'>Connecte en tant que ".$_SESSION['LoggedIn']."</h5></p>";

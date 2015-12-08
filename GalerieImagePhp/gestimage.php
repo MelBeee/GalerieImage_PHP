@@ -7,9 +7,11 @@ $Fichier = "Commentaire.txt";
 $Array = array();
 $ProprioImage = "";
 $errorLogin = "";
-
+//Si le post vient du boutton Supprimer
 if (isset($_POST['SupprimerImage'])) {
+    //Supprime l'image
     unlink($_POST['ImageSupp']);
+    //Ouvre le fichier photo est supprime la ligne de l'image
     $Fichier = "Photo.txt";
     $substring = substr($_SESSION['ImageCommentaire'], strpos($_SESSION['ImageCommentaire'], '/'), sizeof($_SESSION['ImageCommentaire']) - 6);
     if ($PHOTO = file_get_contents($Fichier)) {
@@ -17,29 +19,32 @@ if (isset($_POST['SupprimerImage'])) {
 
         file_put_contents($Fichier, $PHOTO);
     }
-
+    //Renvoit à la page de la galerie
     header("Location: Index.php");
 }
-
+//Si le post vient d'envoyer
 if (isset($_POST['EnvoyerCommentaire'])) {
+    //Si le commentaire n'est pas vide
     if ($_POST['LeCommentaire'] != "") {
+        //On écrit le commentaire dans le file  avec le nom d'usager et la date d'écriture
         if ($Handle = fopen($Fichier, 'a')) {
             fwrite($Handle, "*" . $_SESSION['LoggedIn'] . "_" . $_POST['LeCommentaire'] . "/" . date('j M Y, G:i:s') . "¯" . "~" . $_SESSION['ImageCommentaire'] . "\n");
         }
     }
 }
-
+//S'il y a un get d'image qui vient de la page index alors on set l'image a afficher pour celle que l'Usager a choisis
 if (isset($_GET['image'])) {
     $_SESSION['ImageCommentaire'] = $_GET['image'];
+    //Fait apparaitre les forms
     gestImageMain();
 }
-
+//Fonction qui retourne la string qui se retrouve entre 2 characters
 function getStringBetween($str, $from, $to)
 {
     $sub = substr($str, strpos($str, $from) + strlen($from), strlen($str));
     return substr($sub, 0, strpos($sub, $to));
 }
-
+//trouve le propriétaire de l'image en analysant le nom de l'image
 function getProprioImage()
 {
     $ProprioImage = "rien-";
@@ -65,7 +70,7 @@ function getProprioImage()
 }
 
 
-
+//Analise les commentaire pour les mettres dans ordre d'écriture
 function ProccessComment()
 {
     $handle = fopen("Commentaire.txt", "r");
@@ -79,6 +84,7 @@ function ProccessComment()
 
         fclose($handle);
     }
+    //Si le tableau n'est pas vide alors on affiche son contenue avec style et grâce
     if (!empty($Array)) {
         for ($i = count($Array) - 1; $i >= 0; $i--) {
             $user = substr($Array[$i], 0, strpos($Array[$i], '_'));
@@ -99,7 +105,7 @@ function ProccessComment()
         }
     }
 }
-
+//Fonction qui fait apparaitre la page avec tout les forms
 function gestImageMain()
 {
     echo "<!DOCTYPE html>";

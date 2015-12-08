@@ -3,6 +3,10 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+//Si l'usagger n'est pas logged in
+if (!isset($_SESSION['LoggedIn'])) {
+    header("Location: Index.php");
+}
 
 $errorLogin = "";
 

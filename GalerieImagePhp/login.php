@@ -69,7 +69,7 @@ if (isset($_POST['Connecter'])) {
             WriteInLog($_POST['username'],date('j M Y, G:i:s'),$_SERVER['REMOTE_ADDR']);
 
             // redirect sur Index
-            header("Location: Index.php");
+            header("Location: index.php");
         } else {
             $errorLogin = "Authentification non reussie";
         }

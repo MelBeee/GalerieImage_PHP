@@ -4,8 +4,9 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+//Si l'usager n'est pas connecté en tant qu'admin alors on le renvoit à index
 if ($_SESSION['LoggedIn'] != 'admin') {
-    header("Location: Index.php");
+    header("Location: index.php");
 }
 
 if (isset($_POST['Supprimer'])) {

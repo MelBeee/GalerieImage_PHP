@@ -3,13 +3,14 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-//Si l'usagger n'est pas logged in
+//Si l'usagger n'est pas logged in on le renvoit à index
 if (!isset($_SESSION['LoggedIn'])) {
-    header("Location: Index.php");
+    header("Location: index.php");
 }
 
 $errorLogin = "";
 
+//Vérifie l'ancien mot de passe entré par l'usager
 function VerifyOldPassword($password)
 {
     $Fichier = "Authentification.txt";
@@ -22,7 +23,7 @@ function VerifyOldPassword($password)
     }
     return true;
 }
-
+//Écrire dans le file le nouveau mot de passe
 function WriteInFile($password, $oldpassword)
 {
     $Fichier = "Authentification.txt";
@@ -39,12 +40,16 @@ function WriteInFile($password, $oldpassword)
     }
 }
 
+//Si le post est envoyé par le bouton de modification de mot de passe
 if (isset($_POST['ModifierPassword'])) {
+    //Si les inputs sont vides
     if (empty($_POST['NewPassword']) && empty($_POST['OldPassword']) && empty($_POST['VerifyPassword'])) {
         $errorLogin = 'Tous les champs doivent etre remplis';
     } else {
-        if ($_POST['NewPassword'] == $_POST['VerifyPassword']) {
+        //Si le nouveau mot de passe est identique au vieu mot de passe
+        if (strcmp( $_POST['NewPassword'], $_POST['VerifyPassword']) === 0){
             if (VerifyOldPassword($_POST['OldPassword'])) {
+
                 WriteInFile($_POST['NewPassword'], $_POST['OldPassword']);
             } else {
                 $errorLogin = 'Ancien mot de passe incorrecte';
@@ -54,20 +59,23 @@ if (isset($_POST['ModifierPassword'])) {
         }
     }
 }
-
+//Si le post rester connecter est envoyé
 if(isset($_POST['ResterConnecter']))
 {
+    //Si le checkbox connecté est cocher
     if(isset($_POST['Connected']))
     {
         setcookie("Connected", $_SESSION['LoggedIn'], time()+86400 , "/");
     }
 }
+//Si le coockie Connected n'est pas vide
 if(isset($_COOKIE['Connected']))
 {
     $_SESSION['LoggedIn'] = $_COOKIE['Connected'];
     header("Location: Index.php");
 }
 
+//Echo la page avec et le head
 echo "<!DOCTYPE html>";
 echo "<html>";
 echo "<head>";
@@ -88,6 +96,7 @@ echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
             <ul class=\"nav navbar-nav\">\n
                 <li><a  href='index.php' >Index</a></li>\n
                 <li><a  href='profil.php'>Profil</a></li>\n";
+                //Si l'usager est connecté en tant qu'admin alors on rajoute l'onglet admin
                 if($_SESSION['LoggedIn'] == "admin")
                 {
                     echo "<li><a  href='admin.php' >Admin</a></li>\n";
@@ -97,7 +106,7 @@ echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
         </div>
     </div>
 </div>";
-
+//Echo les forms
 echo "<form action='' method='POST' >
 <div class='container' style='margin-top:5%; margin-bottom: 5%'>
     <div class='row'>
@@ -153,6 +162,7 @@ echo "<form action='' method='POST' >
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
                 <div class='navbar-header'>";
+//Si l'usager est logged in alors on fait écrit en tant que qui
 if (isset($_SESSION['LoggedIn'])) {
     echo "<p><h5 style='color:white;'>Connecte en tant que " . $_SESSION['LoggedIn'] . "</h5></p>";
 }

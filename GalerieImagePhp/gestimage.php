@@ -3,6 +3,12 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+//Si l'usagger n'est pas logged in on le renvoit à index
+if (!isset($_SESSION['LoggedIn'])) {
+    header("Location: Index.php");
+}
+
+
 $Fichier = "Commentaire.txt";
 $Array = array();
 $ProprioImage = "";
@@ -20,7 +26,7 @@ if (isset($_POST['SupprimerImage'])) {
         file_put_contents($Fichier, $PHOTO);
     }
     //Renvoit à la page de la galerie
-    header("Location: Index.php");
+    header("Location: index.php");
 }
 //Si le post vient d'envoyer
 if (isset($_POST['EnvoyerCommentaire'])) {

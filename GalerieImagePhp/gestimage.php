@@ -154,6 +154,7 @@ if (isset($_POST['EnvoyerCommentaire'])) {
         //On écrit le commentaire dans le file  avec le nom d'usager et la date d'écriture
         if ($Handle = fopen($Fichier, 'a')) {
             fwrite($Handle, "*" . $_SESSION['LoggedIn'] . "_" . $_POST['LeCommentaire'] . "/" . date('j M Y, G:i:s') . "¯" . "~" . $_SESSION['ImageCommentaire'] . "\n");
+            header('Location: '.$_SERVER['REQUEST_URI']);
         }
     }
 }

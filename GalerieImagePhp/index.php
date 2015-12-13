@@ -1,31 +1,27 @@
 <?php
-//Si la varaible session n'existe pas on la crée
+
+//--- SESSION ET REDIRECTION ---\\
+
+//Si la variable session n'existe pas on la crée
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
+}
+//Si l'usager n'est pas connecté on le redirige vers  la page de connection 
+if (!isset($_SESSION['LoggedIn'])) {
+    header("Location: login.php");
 }
 //Inclut la page gestion image
 include_once("gestimage.php");
 
+//--- VARIABLES ---\\
+
+// tableau contenant tout les photos televerser sur le site 
 $ArrayPhoto = array();
+// contient le message d'erreur a afficher
 $errorLogin = "";
-//Fonction qui trie le fichier
-function trierdirectory($dir) {
-    $ignored = array('.', '..', '.svn', '.htaccess');
 
-    $files = array();
-    foreach (scandir($dir) as $file) {
-        if (in_array($file, $ignored)) continue;
-        $files[$file] = filemtime($dir . '/' . $file);
-    }
+//--- POST ET GET ---\\
 
-    arsort($files);
-    $files = array_keys($files);
-
-    return ($files) ? $files : false;
-}
-//Check si l'usager est logged in
-if(isset($_SESSION['LoggedIn']))
-{
     $extension="";
     //Si le Post a été envoyé par le button de soumission d'image
     if(isset($_POST['GestionImageSubmit']))
@@ -53,6 +49,7 @@ if(isset($_SESSION['LoggedIn']))
                         //Copie le file choisis dans le dossier image
                     if(move_uploaded_file($_FILES['ImageToUpload']['tmp_name'], "image/".$uploadfile))
                     {
+					// redirige a index
                         header("Location: index.php");
                     }
                 }
@@ -67,6 +64,9 @@ if(isset($_SESSION['LoggedIn']))
             $errorLogin = "Il faut un titre a l'image";
         }
     }
+	
+	//--- AFFICHAGE HTML ---\\
+	
     //Echo le début de la page d'index
     echo "<!DOCTYPE html>";
     echo "<html>";
@@ -101,13 +101,13 @@ if(isset($_SESSION['LoggedIn']))
             </div>";
     echo "<div class='container' style='margin-top:5%; margin-bottom: 5%'>";
 
-    //
+	// variable contenant le nom de fichier 
     $directory = "image";
-    //Check si le dossier est vide
+    //Check si le dossier est vide (2 parce qu'il y a tjrs 2 fichiers cachers dans les dossiers)
     $is_empty = (bool) (count(scandir($directory)) == 2);
+	// si il n'est pas vide, on affiche les images
     if (!$is_empty)
     {
-
         echo "<div class='row'>
               <form action='gestimage.php' method='GET' enctype='multipart/form-data'>
 		      <div class='list-group gallery'>";
@@ -129,7 +129,7 @@ if(isset($_SESSION['LoggedIn']))
             //Lis ce que contient le tableau en partant de la fin
             for($i = count($Array)-1 ; $i >= 0 ; $i--)
             {
-                if($Array[$i] != "")
+                if(strlen($Array[$i]) > 5)
                 {
                      //Décortique la ligne dans le tableau pour trouver les informations nécessaires lors de l'affichage
                     $line = $Array[$i];
@@ -139,6 +139,7 @@ if(isset($_SESSION['LoggedIn']))
                     $Guid = getStringBetween($line, '_', '¯');
                     $NbCommentaire = 0;
                     //Check le nombre de ligne dans le fichier qui sauvegarde les commentaires (Savoir combien il y de commentaire)
+					$Fichier = "Commentaire.txt";
                     if($Commentaire = file_get_contents($Fichier))
                     {
                         $NbCommentaire = substr_count($Commentaire,$Guid);
@@ -164,7 +165,6 @@ if(isset($_SESSION['LoggedIn']))
             </div>
              ";
     }
-
     echo "<div class='row'>
     	<div class='col-md-4 col-md-offset-4'>
     		<div class='panel panel-default'>
@@ -207,8 +207,3 @@ if(isset($_SESSION['LoggedIn']))
         </div>";
     echo "</body>";
     echo "</html>";
-}
-else
-{
-    header("Location: login.php");
-}

@@ -1,21 +1,62 @@
 <?php
 
+//--- SESSION ET REDIRECTION ---\\
+
+// si la session n'est pas starter, on la start
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+//Si la variable session existe déja on redirect tout de suite à la galerie d'image
+if(isset($_SESSION['LoggedIn']))
+{
+    header("Location: index.php");
+}
+
 //Set le timezone pour que la fonction date retourne les bonnes valeurs
 date_default_timezone_set("America/New_York");
-//Echo début de page HTML
-echo "<!DOCTYPE html>";
-echo "<html>";
-echo "<head>";
-echo "<title>Login</title>";
-echo "<meta charset='UTF-8'>";
-echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
-                 <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
-                 <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
-echo "</head>";
-echo "<body  style=\"background-color:#A4D36B\">";
+
+//--- VARIABLES ---\\
+
+//Variable d'erreur
+$errorLogin = "";
+
+//--- FONCTIONS ---\\
+
+//Fonction qui valide le login
+function validateLogin($user, $password)
+{
+	// variable contenant le nom du fichier a ouvrir
+    $Fichier = "Authentification.txt";
+	// variable contenant la chaine de caractere a verifier dans le fichier 
+	// nomutilisateur.motdepasse
+    $var = $user . ":" . $password;
+	// ouvre le fichier 
+    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
+		// on compte le nombre de ligne qui contient la chaine de caractere
+        $existe = substr_count($AUTHENTIFICATION, $var);
+    }
+	// s'il y en a pas, on retourne false pour pas se connecter 
+    if ($existe == 0) {
+        return false;
+    }
+	// sinon on retourne true pour se connecter 
+    return true;
+}
+
+//Fonction qui écrit dans le file qui garde en mémoire lorsqu'un usager se connecte
+function WriteInLog($Username,$Date,$Ip)
+{
+	// variable contenant le nom du fichier a ouvrir
+    $Fichier = "LogFile.txt";
+	// constitution de la chaine de caracteres a ecrire dans le fichier 
+    $var = $Username.":".$Date."/".$Ip."-";
+	// on ouvre le fichier
+    if ($handle = fopen($Fichier, 'a')) {
+	// on ajoute la chiane de caracteres 
+        fwrite($handle, $var . "\n");
+    }
+}
 
 //Si la page a été envoyé par le button déconnecter alors on détruit le cookie et la session
 if(isset($_GET['deconnecter']))
@@ -28,46 +69,21 @@ if(isset($_GET['deconnecter']))
         header("Location: login.php");
     }
 }
-//Si la variable session existe déja on redirect tout de suite à la galerie d'image
-if(isset($_SESSION['LoggedIn']))
-{
-    header("Location: index.php");
-}
-//Variable d'erreur
-$errorLogin = "";
-//Fonction qui valide le login
-function validateLogin($user, $password)
-{
-    $Fichier = "Authentification.txt";
-    $var = $user . ":" . $password;
-    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
-        $existe = substr_count($AUTHENTIFICATION, $var);
-    }
-    if ($existe == 0) {
-        return false;
-    }
-    return true;
-}
-//Fonction qui écrit dans le file qui garde en mémoire lorsqu'un usager se login
-function WriteInLog($Username,$Date,$Ip)
-{
-    $Fichier = "LogFile.txt";
-    $var = $Username.":".$Date."/".$Ip."-";
 
-    if ($handle = fopen($Fichier, 'a')) {
-        fwrite($handle, $var . "\n");
-    }
-}
+//--- POST ET GET ---\\
+
 //Si le post Connecter est envoyé
 if (isset($_POST['Connecter'])) {
+	// on verifie si l'utilsiateur a écrit des choses dans les textbox 
     if (empty($_POST['username']) && empty($_POST['password'])) {
         $errorLogin = 'Les deux champs ne peuvent etre vide';
     } else {
+		// on verifie s'il a ecrit les bons identifiants 
         if (validateLogin($_POST['username'], $_POST['password'])) {
-            // save username dans variable session LoggedIn
+            // enregistre la valeur de username dans la variable session LoggedIn
             $_SESSION['LoggedIn'] = $_POST['username'];
+			// on ecrit dans le log 
             WriteInLog($_POST['username'],date('j M Y, G:i:s'),$_SERVER['REMOTE_ADDR']);
-
             // redirect sur Index
             header("Location: index.php");
         } else {
@@ -75,7 +91,19 @@ if (isset($_POST['Connecter'])) {
         }
     }
 }
-//Echo le menu
+
+//--- AFFICHAGE HTML ---\\
+
+echo "<!DOCTYPE html>";
+echo "<html>";
+echo "<head>";
+echo "<title>Login</title>";
+echo "<meta charset='UTF-8'>";
+echo "<link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css\">\n
+                 <link rel=\"stylesheet\" href=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css\">\n
+                 <script src=\"https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js\"></script>";
+echo "</head>";
+echo "<body  style=\"background-color:#A4D36B\">";
 echo "
 <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
     <div class=\"container\">\n
@@ -112,7 +140,6 @@ echo "
 if ($errorLogin != '') {
     echo "<div> $errorLogin </div>";
 }
-
 echo "</fieldset>
 			      	</form>
 			    </div>
@@ -120,7 +147,6 @@ echo "</fieldset>
 		</div>
 	</div>
 </div>";
-
 //Echo le form le connexion
 echo "</form>";
 echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>

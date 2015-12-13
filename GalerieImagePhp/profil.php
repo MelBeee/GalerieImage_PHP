@@ -1,44 +1,65 @@
 <?php
 
+//--- SESSION ET REDIRECTION ---\\
+
+// si la session n'est pas starter, on la start
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-//Si l'usagger n'est pas logged in on le renvoit à index
+//Si l'usager n'est pas connecté on le redirige vers  la page de connection 
 if (!isset($_SESSION['LoggedIn'])) {
-    header("Location: index.php");
+    header("Location: login.php");
 }
 
+//--- VARIABLES ---\\
+
+// variable contenant les messages d'erreur a afficher a l'utilisateur
 $errorLogin = "";
 
-//Vérifie l'ancien mot de passe entré par l'usager
+//--- FONCTIONS ---\\
+
+//Vérifie si l'ancien mot de passe entré par l'usager est bon
 function VerifyOldPassword($password)
 {
+	// variable contenant le nom du fichier 
     $Fichier = "Authentification.txt";
+	// variable contenant la ligne qui devrait etre dans le fichier 
+	// nomutilisateur.motdepasse
     $var = $_SESSION['LoggedIn'] . ":" . $password;
+	// on ouvre le fichier texte 
     if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
+	// on compte le nombre de ligne contenant la variable $var 
         $existe = substr_count($AUTHENTIFICATION, $var);
     }
+	// s'il il y a aucune ligne de retourner ca veut dire qu'il a entré un mauvais mot de passe 
+	// on retourne donc false 
     if ($existe == 0) {
         return false;
     }
+	// sinon on retourne true parce qu'il a entrer le bon mot de passe 
     return true;
 }
+
 //Écrire dans le file le nouveau mot de passe
 function WriteInFile($password, $oldpassword)
 {
+	// variable contenant le fichier a ouvrir 
     $Fichier = "Authentification.txt";
+	// la ligne qu'on veut ecrire 
     $var = $_SESSION['LoggedIn'] . ":" . $password;
+	// la ligne qu'on veut remplacer 
     $oldvar = $_SESSION['LoggedIn'] . ":" . $oldpassword;
 
+	// on ouvre le fichier 
     if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
-        $AUTHENTIFICATION = str_replace($oldvar, "", $AUTHENTIFICATION);
-
+		// on remplace la ligne par la nouvelle ligne 
+        $AUTHENTIFICATION = str_replace($oldvar, $var, $AUTHENTIFICATION);
+		// on remet le tout dans le fichier 
         file_put_contents($Fichier, $AUTHENTIFICATION);
     }
-    if ($handle = fopen($Fichier, 'a')) {
-        fwrite($handle, $var . "\n");
-    }
 }
+
+//--- POST ET GET ---\\ 
 
 //Si le post est envoyé par le bouton de modification de mot de passe
 if (isset($_POST['ModifierPassword'])) {
@@ -46,10 +67,10 @@ if (isset($_POST['ModifierPassword'])) {
     if (empty($_POST['NewPassword']) && empty($_POST['OldPassword']) && empty($_POST['VerifyPassword'])) {
         $errorLogin = 'Tous les champs doivent etre remplis';
     } else {
-        //Si le nouveau mot de passe est identique au vieu mot de passe
+        //Si le nouveau mot de passe est identique au vieux mot de passe
         if (strcmp( $_POST['NewPassword'], $_POST['VerifyPassword']) === 0){
             if (VerifyOldPassword($_POST['OldPassword'])) {
-
+				
                 WriteInFile($_POST['NewPassword'], $_POST['OldPassword']);
             } else {
                 $errorLogin = 'Ancien mot de passe incorrecte';
@@ -59,12 +80,14 @@ if (isset($_POST['ModifierPassword'])) {
         }
     }
 }
+
 //Si le post rester connecter est envoyé
 if(isset($_POST['ResterConnecter']))
 {
     //Si le checkbox connecté est cocher
     if(isset($_POST['Connected']))
     {
+		// on creer un cookie avec la variable loggedin qui sera detruit dans 24h 
         setcookie("Connected", $_SESSION['LoggedIn'], time()+86400 , "/");
     }
 }
@@ -75,7 +98,8 @@ if(isset($_COOKIE['Connected']))
     header("Location: Index.php");
 }
 
-//Echo la page avec et le head
+//--- AFFICHAGE HTML ---\\
+
 echo "<!DOCTYPE html>";
 echo "<html>";
 echo "<head>";
@@ -106,7 +130,6 @@ echo " <div class=\"navbar navbar-inverse navbar-fixed-top\">\n
         </div>
     </div>
 </div>";
-//Echo les forms
 echo "<form action='' method='POST' >
 <div class='container' style='margin-top:5%; margin-bottom: 5%'>
     <div class='row'>

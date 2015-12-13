@@ -1,30 +1,60 @@
 <?php
 
+//--- SESSION ET REDIRECTION ---\\
+
+//Si la variable session n'existe pas on la crée
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
 //Si l'usager n'est pas connecté en tant qu'admin alors on le renvoit à index
 if ($_SESSION['LoggedIn'] != 'admin') {
     header("Location: index.php");
 }
 
-if (isset($_POST['Supprimer'])) {
-    $Fichier = "Authentification.txt";
-    $user = $_POST['Supprimer'];
+//--- FONCTIONS ---\\
 
-    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
-        $AUTHENTIFICATION = str_replace($user, "", $AUTHENTIFICATION);
-
-        file_put_contents($Fichier, $AUTHENTIFICATION);
-    }
-}
-
+//Fonction qui retourne la string qui se retrouve entre 2 characteres
 function getStringBetween($str, $from, $to)
 {
     $sub = substr($str, strpos($str, $from) + strlen($from), strlen($str));
     return substr($sub, 0, strpos($sub, $to));
 }
+
+// Affiche tout les usagers qui existe pour permettre a l'admin de les supprimer
+function AfficherUsers()
+{
+	// ouvre le fichier authentification
+	$handle = fopen("Authentification.txt", 'r');
+	if ($handle) {
+		// pour chaque ligne on affiche le nom et on crée un bouton
+		while (($line = fgets($handle)) !== false) {
+			if (substr_count($line, ':') > 0 && substr_count($line, 'admin') <= 0) {
+				$user = substr($line, 0, strpos($line, ':'));
+				echo "<button class='btn btn-lg btn-success btn-block' name='Supprimer' type='submit' value='$line'>Supprimer $user</button>";
+				echo "<br>";
+			}
+		}
+	}
+}
+
+//--- POST ET GET ---\\
+
+// Si on post le supprimer
+if (isset($_POST['Supprimer'])) {
+// fichier texte a ouvrir 
+    $Fichier = "Authentification.txt";
+// get le nom que l'admin a clicker pour le supprimer
+    $user = $_POST['Supprimer'];
+// ouvre le fichier 
+    if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
+	// remplace la ligne par du vide 
+        $AUTHENTIFICATION = str_replace($user, "", $AUTHENTIFICATION);
+		
+        file_put_contents($Fichier, $AUTHENTIFICATION);
+    }
+}
+
+//--- AFFICHAGE HTML ---\\
 
 echo "<!DOCTYPE html>";
 echo "<html>";
@@ -66,16 +96,7 @@ echo "<form action='' method='POST' >
 			  	<div class='panel-body'  style='overflow:scroll; height:350px;'>
 
                     <fieldset>";
-$handle = fopen("Authentification.txt", 'r');
-if ($handle) {
-    while (($line = fgets($handle)) !== false) {
-        if (substr_count($line, ':') > 0 && substr_count($line, 'admin') <= 0) {
-            $user = substr($line, 0, strpos($line, ':'));
-            echo "<button class='btn btn-lg btn-success btn-block' name='Supprimer' type='submit' value='$line'>Supprimer $user</button>";
-            echo "<br>";
-        }
-    }
-}
+AfficherUsers();
 echo " </fieldset>
 			    </div>
 			</div>
@@ -103,7 +124,7 @@ if($handleLog)
       </thead>
       <tbody>";
     while (($lineLog = fgets($handleLog)) !== false) {
-            $Array[] = $lineLog;
+        $Array[] = $lineLog;
     }
     if (!empty($Array)) {
         $cpt = 1;

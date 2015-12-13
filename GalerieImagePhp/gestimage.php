@@ -1,102 +1,93 @@
 <?php
+
+//--- SESSION ET REDIRECTION ---\\
+
+//Si la variable session n'existe pas on la crée
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-
-//Si l'usagger n'est pas logged in on le renvoit à index
+//Si l'usager n'est pas logged in on le renvoit à login
 if (!isset($_SESSION['LoggedIn'])) {
-    header("Location: Index.php");
+    header("Location: login.php");
 }
 
+//--- VARIABLES ---\\
 
-$Fichier = "Commentaire.txt";
+// variable contenant le nom d'un fichier a ouvrir 
+$Fichier = "";
+// tableau qui va contenir les commentaires 
 $Array = array();
+// variable qui va contennir le nom du proprietaire de l'image
 $ProprioImage = "";
+// variable qui va contenir une erreur a affichier 
 $errorLogin = "";
-//Si le post vient du boutton Supprimer
-if (isset($_POST['SupprimerImage'])) {
-    //Supprime l'image
-    unlink($_POST['ImageSupp']);
-    //Ouvre le fichier photo est supprime la ligne de l'image
-    $Fichier = "Photo.txt";
-    $substring = substr($_SESSION['ImageCommentaire'], strpos($_SESSION['ImageCommentaire'], '/'), sizeof($_SESSION['ImageCommentaire']) - 6);
-    if ($PHOTO = file_get_contents($Fichier)) {
-        $PHOTO = str_replace($substring, "", $PHOTO);
 
-        file_put_contents($Fichier, $PHOTO);
-    }
-    //Renvoit à la page de la galerie
-    header("Location: index.php");
-}
-//Si le post vient d'envoyer
-if (isset($_POST['EnvoyerCommentaire'])) {
-    //Si le commentaire n'est pas vide
-    if ($_POST['LeCommentaire'] != "") {
-        //On écrit le commentaire dans le file  avec le nom d'usager et la date d'écriture
-        if ($Handle = fopen($Fichier, 'a')) {
-            fwrite($Handle, "*" . $_SESSION['LoggedIn'] . "_" . $_POST['LeCommentaire'] . "/" . date('j M Y, G:i:s') . "¯" . "~" . $_SESSION['ImageCommentaire'] . "\n");
-        }
-    }
-}
-//S'il y a un get d'image qui vient de la page index alors on set l'image a afficher pour celle que l'Usager a choisis
-if (isset($_GET['image'])) {
-    $_SESSION['ImageCommentaire'] = $_GET['image'];
-    //Fait apparaitre les forms
-    gestImageMain();
-}
-//Fonction qui retourne la string qui se retrouve entre 2 characters
+//--- FONCTIONS ---\\
+
+//Fonction qui retourne la string qui se retrouve entre 2 characteres
 function getStringBetween($str, $from, $to)
 {
     $sub = substr($str, strpos($str, $from) + strlen($from), strlen($str));
     return substr($sub, 0, strpos($sub, $to));
 }
+
 //trouve le propriétaire de l'image en analysant le nom de l'image
 function getProprioImage()
 {
+	// variable contenant le nom du proprietaire
     $ProprioImage = "rien-";
+	// variable contenant le nom du fichier 
     $Fichier = "Photo.txt";
+	// ouverture du fichier 
     if ($PHOTO = file_get_contents($Fichier)) {
-        $handle = fopen("Photo.txt", 'r');
+        $handle = fopen($Fichier , 'r');
         if ($handle) {
+		// on remplis le tableau avec chaque ligne du fichier texte
             while (($line = fgets($handle)) !== false) {
                 $Array[] = $line;
             }
             fclose($handle);
         }
     }
+	// trouve le nom du proprietaire pour savoir si on peut supprimer ou non l'image 
     $Trouver = false;
+	// tant qu'on a pas fait tout les lignes et qu'on a pas trouver le proprietaire
     for ($i = 0; $i < count($Array) && !$Trouver; $i++) {
+		// si le proprietaire trouver est le meme que LoggedIn, c'est qu'on peut supprimer
         if (!$Trouver && $_SESSION['LoggedIn'] == substr($Array[$i], 0, strpos($Array[$i], '/')) &&  $_SESSION['ImageCommentaire'] == "image/".getStringBetween($Array[$i], '_', '¯')) {
             $ProprioImage = substr($Array[$i], 0, strpos($Array[$i], '/'));
             $Trouver = true;
         }
     }
-
     return $ProprioImage;
 }
 
-
-//Analise les commentaire pour les mettres dans ordre d'écriture
+//Analyse les commentaires pour les afficher en ordre
 function ProccessComment()
 {
+// ouvre le fichier commentaire 
     $handle = fopen("Commentaire.txt", "r");
     if ($handle) {
+	// on cherche dans chaque ligne 
         while (($line = fgets($handle)) !== false) {
+		// si le nom de l'image est dans la ligne on get la ligne dans le tableau
             if (strpos($line, $_SESSION['ImageCommentaire']) !== false) {
-
                 $Array[] = getStringBetween($line, "*", "~");
             }
         }
-
         fclose($handle);
     }
     //Si le tableau n'est pas vide alors on affiche son contenue avec style et grâce
     if (!empty($Array)) {
+	// pour chaque ligne dans le tableau, on affiche son information
         for ($i = count($Array) - 1; $i >= 0; $i--) {
+		// get le nom utilisateur dans la chaine 
             $user = substr($Array[$i], 0, strpos($Array[$i], '_'));
+		// get le commentaire dans la chaine
             $comment = getStringBetween($Array[$i], "_", "/");
+		// get la date dans la chaine 
             $date = getStringBetween($Array[$i], "/", "¯");
-
+		// affiche le tout 
             echo "
                 <hr data-brackets-id='12673'>
                 <ul data-brackets-id='12674' id='sortable' class='list-unstyled ui-sortable'>
@@ -111,7 +102,70 @@ function ProccessComment()
         }
     }
 }
-//Fonction qui fait apparaitre la page avec tout les forms
+
+//--- POST ET GET ---\\
+
+//Si le post vient du boutton Supprimer
+if (isset($_POST['SupprimerImage'])) {
+    //Ouvre le fichier photo est supprime la ligne de l'image
+    $Fichier = "Photo.txt";
+    $Trouver = false;
+    $LaPhoto = "";
+
+    $handle = fopen("Photo.txt", 'r');
+    if($handle)
+    {
+        $Image = substr($_SESSION['ImageCommentaire'],6, strlen($_SESSION['ImageCommentaire'])-6);
+        //Lis les informations et les sauvegardes dans un tableau
+        while(($line = fgets($handle)) !== false && !$Trouver)
+        {
+            if(strpos($line, $Image) !== false)
+            {
+                echo $line;
+                $LaPhoto = $line;
+                $Trouver = true;
+            }
+        }
+        //Ferme le fichier
+        fclose($handle);
+    }
+
+    if($Trouver)
+    {
+        //Supprime l'image
+        unlink($_POST['ImageSupp']);
+        // ouvre le fichier
+        if ($AUTHENTIFICATION = file_get_contents($Fichier)) {
+            // remplace la ligne par du vide
+            $AUTHENTIFICATION = str_replace($LaPhoto, "", $AUTHENTIFICATION);
+
+            file_put_contents($Fichier, $AUTHENTIFICATION);
+        }
+
+        //Renvoit à la page de la galerie
+        header("Location: index.php");
+    }
+}
+//Si le post vient d'envoyer
+if (isset($_POST['EnvoyerCommentaire'])) {
+    //Si le commentaire n'est pas vide
+    if ($_POST['LeCommentaire'] != "") {
+	$Fichier = "Commentaire.txt";
+        //On écrit le commentaire dans le file  avec le nom d'usager et la date d'écriture
+        if ($Handle = fopen($Fichier, 'a')) {
+            fwrite($Handle, "*" . $_SESSION['LoggedIn'] . "_" . $_POST['LeCommentaire'] . "/" . date('j M Y, G:i:s') . "¯" . "~" . $_SESSION['ImageCommentaire'] . "\n");
+        }
+    }
+}
+//S'il y a un get d'image qui vient de la page index alors on set l'image a afficher pour celle que l'Usager a choisis
+if (isset($_GET['image'])) {
+    $_SESSION['ImageCommentaire'] = $_GET['image'];
+    //Fait apparaitre les forms
+    gestImageMain();
+}
+
+//--- AFFICHAGE HTML ---\\
+
 function gestImageMain()
 {
     echo "<!DOCTYPE html>";
@@ -143,7 +197,6 @@ function gestImageMain()
                         </div>
                     </div>";
 
-    //////////////////////////////////////////////////////////////////////////////
     echo "<div class='container' style='margin-top:5%; margin-bottom:5%;'>";
     echo "<div class='row'>";
     echo "<div class='col-md-4 col-md-offset-4'>";
@@ -177,7 +230,6 @@ function gestImageMain()
     </div>
 </form>";
     echo "</div> </div>";
-    //////////////////////////////////////////////////////////////////////////////
 
     echo "  <div class='navbar navbar-inverse navbar-fixed-bottom'>
             <div class='container'>
